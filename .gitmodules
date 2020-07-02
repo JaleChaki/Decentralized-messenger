@@ -1,0 +1,3 @@
+[submodule "XLogger"]
+	path = XLogger
+	url = https://github.com/JaleChaki/XLogger
