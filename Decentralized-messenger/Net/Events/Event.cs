@@ -4,8 +4,11 @@
 
 		public string FromId;
 
-		public Event(string fromId) {
+		public string EventType;
+
+		public Event(string fromId, string eventType) {
 			this.FromId = fromId;
+			this.EventType = eventType;
 		}
 
 	}
