@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using XLogger;
 
 namespace NetworkUtils {
-	public class AsyncNetworkListener{
+	public class AsyncNetworkListener {
 
 		/// <summary>
 		/// set of client sockets
