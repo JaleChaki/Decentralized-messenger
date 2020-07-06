@@ -1,10 +1,12 @@
-﻿using Messenger.Net.Events;
+﻿using Messenger.Config;
+using Messenger.Net.Events;
 using Messenger.Net.Events.Encoders;
 using Messenger.Net.Scanners;
 using NetworkUtils;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using XLogger;
 
 namespace Messenger.Net {
 	public class DefaultNetworkController : INetworkController {
@@ -31,7 +33,7 @@ namespace Messenger.Net {
 
 		private int ListenPort = 1020;
 
-		public DefaultNetworkController(string selfId) {
+		public DefaultNetworkController(NetworkConfig config) {
 			this.Server = new AsyncNetworkListener();
 			this.Clients = new Dictionary<string, AsyncNetworkClient>();
 			this.UnauthClients = new Dictionary<string, AsyncNetworkClient>();
@@ -42,15 +44,18 @@ namespace Messenger.Net {
 			this.EventEncoder = new JsonEventEncoder();
 			// TODO implement working scanner
 			this.NetworkScanner = new TestNetworkScanner();
-			this.SelfId = selfId;
+			this.SelfId = config.SelfId;
+			this.ConnectPort = config.ConnectPort;
+			this.ListenPort = config.ListenPort;
+			this.ReceivedEvents = new List<Event>();
 		}
 
-		public void UpdateNetwork() {
+		public void Update() {
 			IPAddress[] ips = NetworkScanner.Scan().ToArray();
 			bool[] exists = new bool[ips.Length];
 			foreach (var c in Clients.Values) {
 				for (int i = 0; i < ips.Length; ++i) {
-					if (ips[i].ToString() == c.ConnectedAddress.ToString()) {
+					if (ips[i].ToString() == c.ConnectedAddress?.ToString()) {
 						exists[i] = true;
 					}
 				}
@@ -59,6 +64,7 @@ namespace Messenger.Net {
 				if (exists[i]) {
 					continue;
 				}
+				Logger.Debug("new ip detected, attempt to create new client session");
 				CreateAsyncClient(ips[i]);
 			}
 		}
@@ -80,23 +86,35 @@ namespace Messenger.Net {
 					transformedData[i] = data[i];
 				}
 				Event e = EventEncoder.Decode(transformedData);
+				Logger.Debug("received message from remote server, event type " + e.EventType);
 				if (UnauthClients.ContainsKey(id)) {
 					if (e is AuthEvent) {
 						AsyncNetworkClient client = UnauthClients[id];
 						UnauthClients.Remove(id);
+						if (Clients.ContainsKey(e.FromId)) {
+							Clients[e.FromId].OnClientDisconnected -= ClientDisconnect;
+							Clients[e.FromId].OnClientReceiveData -= ClientReceiveData;
+							Clients.Remove(e.FromId);
+						}
+						Logger.Debug("auth complete code = " + e.FromId);
 						Clients.Add(e.FromId, client);
 					}
+				} else {
+					Logger.Debug("skipped");
 				}
 			}
 		}
 
 		public void ClientDisconnect(string id) {
 			if (UnauthClients.ContainsKey(id)) {
+				Logger.Debug("Disconnected unknown client " + id);
 				UnauthClients[id].OnClientReceiveData -= ClientReceiveData;
 				UnauthClients[id].OnClientDisconnected -= ClientDisconnect;
 				UnauthClients.Remove(id);
 			}
+			Logger.Debug("here");
 			if (Clients.ContainsKey(id)) {
+				Logger.Debug("Disconnected known client " + id);
 				Clients[id].OnClientReceiveData -= ClientReceiveData;
 				Clients[id].OnClientDisconnected -= ClientDisconnect;
 				Clients.Remove(id);
@@ -117,6 +135,7 @@ namespace Messenger.Net {
 		}
 
 		private void ServerConnect(string clientId) {
+			Logger.Debug("connected to remote client, send code " + SelfId);
 			Server.SendData(clientId, EventEncoder.Encode(new AuthEvent(SelfId)));
 		}
 
@@ -127,10 +146,12 @@ namespace Messenger.Net {
 					transformedData[i] = data[i];
 				}
 				Event e = EventEncoder.Decode(transformedData);
+				Logger.Debug("received message from remote client, event type " + e.EventType);
 				if (e is AuthEvent) {
 					if (ClientNameToId.ContainsKey(e.FromId)) {
 						ClientNameToId.Remove(e.FromId);
 					}
+					Logger.Debug("auth complete code = " + e.FromId);
 					ClientNameToId.Add(e.FromId, clientId);
 					return;
 				}
@@ -158,6 +179,7 @@ namespace Messenger.Net {
 		}
 
 		public void SendMessage(string messageText, string userId) {
+			Logger.Debug("send message to " + userId);
 			Clients[userId].SendData(EventEncoder.Encode(new MessageReceivedEvent(SelfId, messageText)));
 		}
 

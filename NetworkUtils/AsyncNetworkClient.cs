@@ -29,14 +29,15 @@ namespace NetworkUtils {
 		public void Connect(IPAddress address, int port) {
 			try {
 				Disconnect();
+				ConnectedAddress = address;
 				ClientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 				ClientSocket.Connect(new IPEndPoint(address, port));
-				ConnectedAddress = address;
 				if (ClientSocket.Connected) {
 					WaitForData();
 				}
 			}
 			catch (SocketException se) {
+				ConnectedAddress = null;
 				Logger.Error("Client exception in Connect: " + se.Message);
 			}
 		}

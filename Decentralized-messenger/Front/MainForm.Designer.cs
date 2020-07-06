@@ -23,10 +23,12 @@
 		/// содержимое этого метода с помощью редактора кода.
 		/// </summary>
 		private void InitializeComponent() {
+			this.components = new System.ComponentModel.Container();
 			this.ClientsContainer = new System.Windows.Forms.FlowLayoutPanel();
 			this.DialogueContainer = new System.Windows.Forms.FlowLayoutPanel();
 			this.MessageTextBox = new System.Windows.Forms.TextBox();
 			this.FileAttachButton = new System.Windows.Forms.Button();
+			this.NetworkUpdateTimer = new System.Windows.Forms.Timer(this.components);
 			this.SuspendLayout();
 			// 
 			// ClientsContainer
@@ -64,6 +66,11 @@
 			this.FileAttachButton.Text = "+";
 			this.FileAttachButton.UseVisualStyleBackColor = true;
 			// 
+			// NetworkUpdateTimer
+			// 
+			this.NetworkUpdateTimer.Enabled = true;
+			this.NetworkUpdateTimer.Tick += new System.EventHandler(this.NetworkUpdateTimer_Tick);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -86,6 +93,7 @@
 		private System.Windows.Forms.FlowLayoutPanel DialogueContainer;
 		private System.Windows.Forms.TextBox MessageTextBox;
 		private System.Windows.Forms.Button FileAttachButton;
+		private System.Windows.Forms.Timer NetworkUpdateTimer;
 	}
 }
 

@@ -10,6 +10,8 @@ namespace Messenger.Net {
 
 		void SendFile(string filePath, string userId);
 
+		void Update();
+
 		IEnumerable<Event> GetUpdates();
 
 	}
