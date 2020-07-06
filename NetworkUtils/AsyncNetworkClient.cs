@@ -6,20 +6,24 @@ using XLogger;
 namespace NetworkUtils {
 	public class AsyncNetworkClient {
 
+		public IPAddress ConnectedAddress { get; private set; }
+
 		public Socket ClientSocket { get; private set; }
 
-		public delegate void ReceiveDataCallback(byte[] data, int size);
+		public delegate void ReceiveDataCallback(string id, byte[] data, int size);
 
 		public ReceiveDataCallback OnClientReceiveData { get; set; }
 
-		public delegate void ClientDisconnectCallback();
+		public delegate void ClientDisconnectCallback(string id);
 
 		public ClientDisconnectCallback OnClientDisconnected { get; set; }
 
 		public bool Connected => ClientSocket == null ? false : ClientSocket.Connected;
 
-		public AsyncNetworkClient() {
+		public readonly string Id;
 
+		public AsyncNetworkClient(string id) {
+			this.Id = id;
 		}
 
 		public void Connect(IPAddress address, int port) {
@@ -27,6 +31,7 @@ namespace NetworkUtils {
 				Disconnect();
 				ClientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 				ClientSocket.Connect(new IPEndPoint(address, port));
+				ConnectedAddress = address;
 				if (ClientSocket.Connected) {
 					WaitForData();
 				}
@@ -38,6 +43,7 @@ namespace NetworkUtils {
 
 		public void Disconnect() {
 			ClientSocket?.Close();
+			ConnectedAddress = null;
 		}
 
 		private void WaitForData() {
@@ -52,10 +58,10 @@ namespace NetworkUtils {
 
 		private void OnDataReceived(IAsyncResult asyn) {
 			try {
-				TransferPackage socketData = (TransferPackage)asyn.AsyncState;
+				ClientTransferPackage socketData = (ClientTransferPackage)asyn.AsyncState;
 				int dataSize = socketData.CurrentSocket.EndReceive(asyn);
 
-				OnClientReceiveData?.Invoke(socketData.Buffer, dataSize);
+				OnClientReceiveData?.Invoke(Id, socketData.Buffer, dataSize);
 				WaitForData();
 			}
 			catch (ObjectDisposedException) {
@@ -64,7 +70,7 @@ namespace NetworkUtils {
 			catch (SocketException se) {
 				Logger.Error("Client exception in OnDataReceived: " + se.Message);
 
-				OnClientDisconnected?.Invoke();
+				OnClientDisconnected?.Invoke(Id);
 			}
 		}
 

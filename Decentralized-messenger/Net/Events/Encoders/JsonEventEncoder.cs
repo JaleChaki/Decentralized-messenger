@@ -16,6 +16,9 @@ namespace Messenger.Net.Events.Encoders {
 			if (e.EventType == MessageReceivedEvent.EventUniqueId) {
 				return JsonConvert.DeserializeObject<MessageReceivedEvent>(jsonStr);
 			}
+			if (e.EventType == AuthEvent.EventUniqueId) {
+				return JsonConvert.DeserializeObject<AuthEvent>(jsonStr);
+			}
 			return null;
 		}
 

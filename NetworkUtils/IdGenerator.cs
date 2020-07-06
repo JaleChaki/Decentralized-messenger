@@ -6,7 +6,7 @@ namespace NetworkUtils {
 	/// <summary>
 	/// represents methods for generate unique Id
 	/// </summary>
-	internal static class IdGenerator {
+	public static class IdGenerator {
 
 		/// <summary>
 		/// length of generated id string
