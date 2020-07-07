@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Newtonsoft.Json;
+using XLogger;
 
 namespace Messenger.Net.Events.Encoders {
 	public class JsonEventEncoder : IEventEncoder {
@@ -12,6 +13,7 @@ namespace Messenger.Net.Events.Encoders {
 
 		public Event Decode(byte[] data) {
 			string jsonStr = EncodeMethod.GetString(data);
+			Logger.Debug("decode string " + jsonStr);
 			TempEvent e = JsonConvert.DeserializeObject<TempEvent>(jsonStr);
 			if (e.EventType == MessageReceivedEvent.EventUniqueId) {
 				return JsonConvert.DeserializeObject<MessageReceivedEvent>(jsonStr);

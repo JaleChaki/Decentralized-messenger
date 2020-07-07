@@ -4,6 +4,8 @@ using System.Collections.Generic;
 namespace Messenger.Net {
 	public interface INetworkController {
 
+		IEnumerable<string> OnlineClients { get; }
+
 		void Start();
 
 		void SendMessage(string messageText, string userId);

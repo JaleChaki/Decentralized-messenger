@@ -1,5 +1,5 @@
 {
-  "ListenPort": 1030,
-  "ConnectPort": 1020,
-  "SelfId": "YYY"
+  "ListenPort": 1020,
+  "ConnectPort": 1030,
+  "SelfId": "qwerty"
 }

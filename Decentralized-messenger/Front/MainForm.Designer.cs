@@ -69,6 +69,7 @@
 			// NetworkUpdateTimer
 			// 
 			this.NetworkUpdateTimer.Enabled = true;
+			this.NetworkUpdateTimer.Interval = 1000;
 			this.NetworkUpdateTimer.Tick += new System.EventHandler(this.NetworkUpdateTimer_Tick);
 			// 
 			// MainForm

@@ -50,12 +50,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config\NetworkConfig.cs" />
+    <Compile Include="Front\DefaultClientButtonFactory.cs" />
+    <Compile Include="Front\DefaultMessageContainerFactory.cs" />
+    <Compile Include="Front\IClientButtonFactory.cs" />
+    <Compile Include="Front\IMessageContainerFactory.cs" />
     <Compile Include="Front\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Front\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Messages\IMessageSaver.cs" />
+    <Compile Include="Messages\JsonMessageSaver.cs" />
     <Compile Include="Net\DefaultNetworkController.cs" />
     <Compile Include="Net\Events\AuthEvent.cs" />
     <Compile Include="Net\Events\Encoders\IEventEncoder.cs" />

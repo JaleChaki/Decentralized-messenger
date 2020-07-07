@@ -33,6 +33,16 @@ namespace Messenger.Net {
 
 		private int ListenPort = 1020;
 
+		public IEnumerable<string> OnlineClients {
+			get {
+				lock (Sync) {
+					foreach (var c in Clients.Keys) {
+						yield return c;
+					}
+				}
+			}
+		}
+
 		public DefaultNetworkController(NetworkConfig config) {
 			this.Server = new AsyncNetworkListener();
 			this.Clients = new Dictionary<string, AsyncNetworkClient>();
@@ -53,10 +63,12 @@ namespace Messenger.Net {
 		public void Update() {
 			IPAddress[] ips = NetworkScanner.Scan().ToArray();
 			bool[] exists = new bool[ips.Length];
-			foreach (var c in Clients.Values) {
-				for (int i = 0; i < ips.Length; ++i) {
-					if (ips[i].ToString() == c.ConnectedAddress?.ToString()) {
-						exists[i] = true;
+			lock (Sync) {
+				foreach (var c in Clients.Values) {
+					for (int i = 0; i < ips.Length; ++i) {
+						if (ips[i].ToString() == c.ConnectedAddress?.ToString()) {
+							exists[i] = true;
+						}
 					}
 				}
 			}
@@ -106,18 +118,24 @@ namespace Messenger.Net {
 		}
 
 		public void ClientDisconnect(string id) {
-			if (UnauthClients.ContainsKey(id)) {
-				Logger.Debug("Disconnected unknown client " + id);
-				UnauthClients[id].OnClientReceiveData -= ClientReceiveData;
-				UnauthClients[id].OnClientDisconnected -= ClientDisconnect;
-				UnauthClients.Remove(id);
-			}
-			Logger.Debug("here");
-			if (Clients.ContainsKey(id)) {
-				Logger.Debug("Disconnected known client " + id);
-				Clients[id].OnClientReceiveData -= ClientReceiveData;
-				Clients[id].OnClientDisconnected -= ClientDisconnect;
-				Clients.Remove(id);
+			lock (Sync) { 
+				if (UnauthClients.ContainsKey(id)) {
+					Logger.Debug("Disconnected unknown client " + id);
+					UnauthClients[id].OnClientReceiveData -= ClientReceiveData;
+					UnauthClients[id].OnClientDisconnected -= ClientDisconnect;
+					UnauthClients.Remove(id);
+				}
+				Logger.Debug("here");
+				string removingKey = null;
+				foreach (var c in Clients) {
+					if (c.Value.Id == id) {
+						removingKey = c.Key;
+					}
+				}
+				if (removingKey == null) {
+					return;
+				}
+				Clients.Remove(removingKey);
 			}
 		}
 
@@ -180,7 +198,11 @@ namespace Messenger.Net {
 
 		public void SendMessage(string messageText, string userId) {
 			Logger.Debug("send message to " + userId);
-			Clients[userId].SendData(EventEncoder.Encode(new MessageReceivedEvent(SelfId, messageText)));
+			if (Clients.ContainsKey(userId)) {
+				Clients[userId].SendData(EventEncoder.Encode(new MessageReceivedEvent(SelfId, messageText)));
+			} else {
+				Logger.Debug("cancelled");
+			}
 		}
 
 		public void Start() {
