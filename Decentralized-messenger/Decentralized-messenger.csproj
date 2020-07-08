@@ -74,6 +74,8 @@
     <Compile Include="Net\FileConverters\BinaryConverter.cs" />
     <Compile Include="Net\FileConverters\IFileConverter.cs" />
     <Compile Include="Net\INetworkController.cs" />
+    <Compile Include="Net\Scanners\AutoNetworkScanner.cs" />
+    <Compile Include="Net\Scanners\FileNetworkScanner.cs" />
     <Compile Include="Net\Scanners\INetworkScanner.cs" />
     <Compile Include="Net\Scanners\TestNetworkScanner.cs" />
     <Compile Include="Program.cs" />

@@ -57,8 +57,10 @@ namespace Messenger.Net {
 			this.Server.OnClientReceiveData += ServerDataReceive;
 			this.Server.OnClientDisconnect += ServerDisconnect;
 			this.EventEncoder = new JsonEventEncoder();
-			// TODO implement working scanner
-			this.NetworkScanner = new TestNetworkScanner();
+
+			//this.NetworkScanner = new TestNetworkScanner();
+			this.NetworkScanner = new FileNetworkScanner();
+			
 			this.SelfId = config.SelfId;
 			this.ConnectPort = config.ConnectPort;
 			this.ListenPort = config.ListenPort;
@@ -81,7 +83,7 @@ namespace Messenger.Net {
 				if (exists[i]) {
 					continue;
 				}
-				Logger.Debug("new ip detected, attempt to create new client session");
+				Logger.Debug("new ip detected " + ips[i].ToString() + ", attempt to create new client session");
 				CreateAsyncClient(ips[i]);
 			}
 		}
@@ -194,6 +196,7 @@ namespace Messenger.Net {
 				if (e is FileTailEvent ftail) {
 					FileStream?.Close();
 					FileStream = null;
+					//ReceivedEvents.Add(new MessageReceivedEvent("New file", FileStream.))
 				}
 			}
 		}
