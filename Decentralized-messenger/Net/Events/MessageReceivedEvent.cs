@@ -9,6 +9,11 @@ namespace Messenger.Net.Events {
 		[JsonProperty]
 		public string MessageContent { get; private set; }
 
+		[JsonConstructor]
+		private MessageReceivedEvent() : base("", EventUniqueId) {
+
+		}
+
 		public MessageReceivedEvent(string fromId, string content) : base(fromId, EventUniqueId) {
 			MessageContent = content;
 		}

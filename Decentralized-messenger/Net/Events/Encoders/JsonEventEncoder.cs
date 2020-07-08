@@ -21,6 +21,15 @@ namespace Messenger.Net.Events.Encoders {
 			if (e.EventType == AuthEvent.EventUniqueId) {
 				return JsonConvert.DeserializeObject<AuthEvent>(jsonStr);
 			}
+			if (e.EventType == FileChunkEvent.EventUniqueId) {
+				return JsonConvert.DeserializeObject<FileChunkEvent>(jsonStr);
+			}
+			if (e.EventType == FileHeaderEvent.EventUniqueId) {
+				return JsonConvert.DeserializeObject<FileHeaderEvent>(jsonStr);
+			}
+			if (e.EventType == FileTailEvent.EventUniqueId) {
+				return JsonConvert.DeserializeObject<FileTailEvent>(jsonStr);
+			}
 			return null;
 		}
 

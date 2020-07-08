@@ -67,7 +67,12 @@
     <Compile Include="Net\Events\Encoders\IEventEncoder.cs" />
     <Compile Include="Net\Events\Encoders\JsonEventEncoder.cs" />
     <Compile Include="Net\Events\Event.cs" />
+    <Compile Include="Net\Events\FileChunkEvent.cs" />
+    <Compile Include="Net\Events\FileHeaderEvent.cs" />
+    <Compile Include="Net\Events\FileTailEvent.cs" />
     <Compile Include="Net\Events\MessageReceivedEvent.cs" />
+    <Compile Include="Net\FileConverters\BinaryConverter.cs" />
+    <Compile Include="Net\FileConverters\IFileConverter.cs" />
     <Compile Include="Net\INetworkController.cs" />
     <Compile Include="Net\Scanners\INetworkScanner.cs" />
     <Compile Include="Net\Scanners\TestNetworkScanner.cs" />
@@ -113,8 +118,6 @@
       <Name>XLogger</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Net\FileConverters\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

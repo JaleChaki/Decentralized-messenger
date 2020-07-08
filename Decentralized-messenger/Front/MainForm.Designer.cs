@@ -30,6 +30,7 @@
 			this.FileAttachButton = new System.Windows.Forms.Button();
 			this.NetworkUpdateTimer = new System.Windows.Forms.Timer(this.components);
 			this.DeliverTo = new System.Windows.Forms.Label();
+			this.OpenFileDialog = new System.Windows.Forms.OpenFileDialog();
 			this.SuspendLayout();
 			// 
 			// ClientsContainer
@@ -68,6 +69,7 @@
 			this.FileAttachButton.TabIndex = 3;
 			this.FileAttachButton.Text = "+";
 			this.FileAttachButton.UseVisualStyleBackColor = true;
+			this.FileAttachButton.Click += new System.EventHandler(this.FileAttachButton_Click);
 			// 
 			// NetworkUpdateTimer
 			// 
@@ -110,6 +112,7 @@
 		private System.Windows.Forms.Button FileAttachButton;
 		private System.Windows.Forms.Timer NetworkUpdateTimer;
 		private System.Windows.Forms.Label DeliverTo;
+		private System.Windows.Forms.OpenFileDialog OpenFileDialog;
 	}
 }
 

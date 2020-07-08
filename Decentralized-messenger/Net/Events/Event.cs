@@ -1,10 +1,14 @@
-﻿namespace Messenger.Net.Events {
+﻿using Newtonsoft.Json;
+
+namespace Messenger.Net.Events {
 
 	public abstract class Event {
 
-		public string FromId;
+		[JsonProperty]
+		public string FromId { get; private set; }
 
-		public string EventType;
+		[JsonProperty]
+		public string EventType { get; private set; }
 
 		public Event(string fromId, string eventType) {
 			this.FromId = fromId;

@@ -75,5 +75,10 @@ namespace Messenger.Front {
 			DeliverTo.Text = "To: " + SelectedUserId;
 		}
 
+		private void FileAttachButton_Click(object sender, EventArgs e) {
+			if (OpenFileDialog.ShowDialog() == DialogResult.OK) {
+				NetworkController.SendFile(OpenFileDialog.FileName, SelectedUserId);
+			}
+		}
 	}
 }

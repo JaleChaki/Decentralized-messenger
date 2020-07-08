@@ -1,11 +1,14 @@
 ﻿using Messenger.Config;
 using Messenger.Net.Events;
 using Messenger.Net.Events.Encoders;
+using Messenger.Net.FileConverters;
 using Messenger.Net.Scanners;
 using NetworkUtils;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using XLogger;
 
 namespace Messenger.Net {
@@ -32,6 +35,8 @@ namespace Messenger.Net {
 		private int ConnectPort = 1020;
 
 		private int ListenPort = 1020;
+
+		private Stream FileStream;
 
 		public IEnumerable<string> OnlineClients {
 			get {
@@ -173,7 +178,23 @@ namespace Messenger.Net {
 					ClientNameToId.Add(e.FromId, clientId);
 					return;
 				}
-				ReceivedEvents.Add(EventEncoder.Decode(transformedData));
+				if (e is MessageReceivedEvent) {
+					ReceivedEvents.Add(EventEncoder.Decode(transformedData));
+				}
+				if (e is FileHeaderEvent fhead) {
+					FileStream?.Close();
+					FileStream = new FileStream(fhead.Filename, FileMode.Create);
+
+				}
+				if (e is FileChunkEvent fchunk) {
+					IFileConverter conv = new BinaryConverter();
+					var chunk = conv.DecodeString(fchunk.Body);
+					FileStream.Write(chunk, 0, chunk.Length);
+				}
+				if (e is FileTailEvent ftail) {
+					FileStream?.Close();
+					FileStream = null;
+				}
 			}
 		}
 
@@ -193,7 +214,23 @@ namespace Messenger.Net {
 		}
 
 		public void SendFile(string filePath, string userId) {
-			
+			lock (Sync) {
+				if (Clients.ContainsKey(userId)) {
+					Clients[userId].SendData(EventEncoder.Encode(new FileHeaderEvent(SelfId, Path.GetFileName(filePath))));
+					byte[] file = File.ReadAllBytes(filePath);
+					IFileConverter conv = new BinaryConverter();
+					int ykz = 0;
+					while (ykz < file.Length) {
+						int i = 0;
+						StringBuilder senddata = new StringBuilder();
+						for (; i < 200 && ykz < file.Length; ++i, ++ykz) {
+							senddata.Append(conv.EncodeBytes(new byte[1] { file[ykz] }));
+						}
+						Clients[userId].SendData(EventEncoder.Encode(new FileChunkEvent(SelfId, senddata.ToString())));
+					}
+					Clients[userId].SendData(EventEncoder.Encode(new FileTailEvent(SelfId)));
+				}
+			}
 		}
 
 		public void SendMessage(string messageText, string userId) {
