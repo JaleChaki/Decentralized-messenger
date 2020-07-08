@@ -31,14 +31,25 @@ namespace NetworkUtils {
 				Disconnect();
 				ConnectedAddress = address;
 				ClientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-				ClientSocket.Connect(new IPEndPoint(address, port));
-				if (ClientSocket.Connected) {
-					WaitForData();
-				}
+				//ClientSocket.Connect(new IPEndPoint(address, port));
+				ClientSocket.BeginConnect(new IPEndPoint(address, port), new AsyncCallback(OnConnectComplete), null);
+				
 			}
 			catch (SocketException se) {
 				ConnectedAddress = null;
 				Logger.Error("Client exception in Connect: " + se.Message);
+			}
+		}
+
+		private void OnConnectComplete(IAsyncResult asyn) {
+			try {
+				ClientSocket.EndConnect(asyn);
+				if (ClientSocket.Connected) {
+					WaitForData();
+				}
+			}
+			catch (Exception e) {
+				Logger.Error(e);
 			}
 		}
 

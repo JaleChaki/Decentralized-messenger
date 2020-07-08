@@ -25,8 +25,11 @@ namespace Messenger.Net.Events.Encoders {
 		}
 
 		public byte[] Encode(Event e) {
-			string jsonStr = JsonConvert.SerializeObject(e);
-			return EncodeMethod.GetBytes(jsonStr);
+			StringBuilder jsonStr = new StringBuilder(JsonConvert.SerializeObject(e));
+			while (jsonStr.Length < 1024) {
+				jsonStr.Append(' ');
+			}
+			return EncodeMethod.GetBytes(jsonStr.ToString());
 		}
 	}
 }

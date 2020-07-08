@@ -1,4 +1,5 @@
 ﻿using Messenger.Config;
+using Messenger.Messages;
 using Messenger.Net;
 using Messenger.Net.Events;
 using Newtonsoft.Json;
@@ -17,7 +18,9 @@ namespace Messenger.Front {
 
 		private IClientButtonFactory ClientButtonFactory;
 
-		private string SelectedUserId = "YYY";
+		private IMessageSaver Saver;
+
+		private string SelectedUserId = "";
 
 		public MainForm() {
 			LoggerConfiguration.ConfigureLoggerConfiguration(
@@ -29,8 +32,13 @@ namespace Messenger.Front {
 			InitializeComponent();
 			MessageContainerFactory = new DefaultMessageContainerFactory();
 			ClientButtonFactory = new DefaultClientButtonFactory();
+			Saver = new TxtMessageSaver();
 			NetworkController = new DefaultNetworkController(JsonConvert.DeserializeObject<NetworkConfig>(File.ReadAllText("Network.json")));
 			NetworkController.Start();
+
+			foreach (var t in Saver.LoadMessages()) {
+				CreateMessage(t.Item1, t.Item2);
+			}
 		}
 
 		private void MessageTextBox_KeyDown(object sender, KeyEventArgs e) {
@@ -42,14 +50,14 @@ namespace Messenger.Front {
 			}
 		}
 
-		private void NetworkUpdateTimer_Tick(object sender, System.EventArgs args) {
+		private void NetworkUpdateTimer_Tick(object sender, EventArgs args) {
 			NetworkController.Update();
 			var events = NetworkController.GetUpdates();
 			foreach (var e in events) {
 				MessageReceivedEvent msg = e as MessageReceivedEvent;
 				Logger.Debug("message " + msg.FromId + " " + msg.MessageContent);
-				Control c = MessageContainerFactory.CreateText(msg.FromId, msg.MessageContent);
-				DialogueContainer.Controls.Add(c);
+				CreateMessage(msg.FromId, msg.MessageContent);
+				Saver.SaveMessage(msg.FromId, msg.MessageContent);
 			}
 			ClientsContainer.Controls.Clear();
 			foreach (var c in NetworkController.OnlineClients) {
@@ -57,8 +65,14 @@ namespace Messenger.Front {
 			}
 		}
 
+		private void CreateMessage(string from, string content) {
+			Control c = MessageContainerFactory.CreateText(from, content);
+			DialogueContainer.Controls.Add(c);
+		}
+
 		private void ClientButtonClick(object sender, EventArgs args) {
 			SelectedUserId = (sender as Control).Tag.ToString();
+			DeliverTo.Text = "To: " + SelectedUserId;
 		}
 
 	}

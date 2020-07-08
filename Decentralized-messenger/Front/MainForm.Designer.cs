@@ -29,6 +29,7 @@
 			this.MessageTextBox = new System.Windows.Forms.TextBox();
 			this.FileAttachButton = new System.Windows.Forms.Button();
 			this.NetworkUpdateTimer = new System.Windows.Forms.Timer(this.components);
+			this.DeliverTo = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// ClientsContainer
@@ -36,16 +37,18 @@
 			this.ClientsContainer.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
 			this.ClientsContainer.Location = new System.Drawing.Point(13, 13);
 			this.ClientsContainer.Name = "ClientsContainer";
-			this.ClientsContainer.Size = new System.Drawing.Size(245, 408);
+			this.ClientsContainer.Size = new System.Drawing.Size(245, 375);
 			this.ClientsContainer.TabIndex = 0;
 			// 
 			// DialogueContainer
 			// 
+			this.DialogueContainer.AutoScroll = true;
 			this.DialogueContainer.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
 			this.DialogueContainer.Location = new System.Drawing.Point(264, 13);
 			this.DialogueContainer.Name = "DialogueContainer";
 			this.DialogueContainer.Size = new System.Drawing.Size(524, 375);
 			this.DialogueContainer.TabIndex = 1;
+			this.DialogueContainer.WrapContents = false;
 			// 
 			// MessageTextBox
 			// 
@@ -72,11 +75,22 @@
 			this.NetworkUpdateTimer.Interval = 1000;
 			this.NetworkUpdateTimer.Tick += new System.EventHandler(this.NetworkUpdateTimer_Tick);
 			// 
+			// DeliverTo
+			// 
+			this.DeliverTo.AutoSize = true;
+			this.DeliverTo.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.DeliverTo.Location = new System.Drawing.Point(13, 395);
+			this.DeliverTo.Name = "DeliverTo";
+			this.DeliverTo.Size = new System.Drawing.Size(174, 20);
+			this.DeliverTo.TabIndex = 4;
+			this.DeliverTo.Text = "Выберите получателя";
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(800, 433);
+			this.Controls.Add(this.DeliverTo);
 			this.Controls.Add(this.FileAttachButton);
 			this.Controls.Add(this.MessageTextBox);
 			this.Controls.Add(this.DialogueContainer);
@@ -95,6 +109,7 @@
 		private System.Windows.Forms.TextBox MessageTextBox;
 		private System.Windows.Forms.Button FileAttachButton;
 		private System.Windows.Forms.Timer NetworkUpdateTimer;
+		private System.Windows.Forms.Label DeliverTo;
 	}
 }
 

@@ -61,7 +61,7 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Messages\IMessageSaver.cs" />
-    <Compile Include="Messages\JsonMessageSaver.cs" />
+    <Compile Include="Messages\TxtMessageSaver.cs" />
     <Compile Include="Net\DefaultNetworkController.cs" />
     <Compile Include="Net\Events\AuthEvent.cs" />
     <Compile Include="Net\Events\Encoders\IEventEncoder.cs" />
@@ -112,6 +112,9 @@
       <Project>{84b9b39f-1d7c-4e84-ba2a-02480f169fe9}</Project>
       <Name>XLogger</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Net\FileConverters\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

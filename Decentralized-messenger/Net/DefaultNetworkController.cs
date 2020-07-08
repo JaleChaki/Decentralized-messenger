@@ -200,6 +200,9 @@ namespace Messenger.Net {
 			Logger.Debug("send message to " + userId);
 			if (Clients.ContainsKey(userId)) {
 				Clients[userId].SendData(EventEncoder.Encode(new MessageReceivedEvent(SelfId, messageText)));
+				lock (Sync) {
+					ReceivedEvents.Add(new MessageReceivedEvent(SelfId, messageText));
+				}
 			} else {
 				Logger.Debug("cancelled");
 			}
